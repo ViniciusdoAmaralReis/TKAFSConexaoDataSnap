@@ -3,7 +3,7 @@ unit UntKAFSConexaoDataSnap;
 interface
 
 uses
-  System.Classes, System.UITypes,
+  System.Classes, System.SysUtils, System.UITypes,
   FMX.DialogService, FMX.Forms,
   Data.SqlExpr;
 
@@ -70,7 +70,7 @@ begin
             SalvarIni('cache', 'servidor', 'porta', AValues[1]);
 
             {$IF Defined(ANDROID)}
-            _resposta := True;
+            _respondido := True;
             {$ENDIF}
           end
           else
