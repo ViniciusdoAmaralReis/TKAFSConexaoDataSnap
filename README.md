@@ -1,6 +1,6 @@
 # 🚀 TKAFSConexaoDataSnap
 
-Componente Delphi para conexão DataSnap com tratamento de erros e interface de configuração de servidor.
+Componente Delphi/FireMonkey para conexão DataSnap com suporte a reconexão automática, persistência de configurações e interface de fallback para entrada manual de dados.
 
 ## 📋 Descrição
 
