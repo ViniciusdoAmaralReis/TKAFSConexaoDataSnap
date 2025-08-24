@@ -43,14 +43,11 @@ end;
 
 procedure TKAFSConexaoDataSnap.Conectar;
 begin
-  var _sair := False;
-  {$IF Defined(ANDROID)}
-  // Variável de controle para saber quando o usuário termina a tela de dialogo
-  var _respondido := False;
-  {$ENDIF}
+  var _tentativas := 0;
+  const _max = 3; // Limite de tentativas
 
-  // Repete enquanto não conseguir conexão e não estiver pronto para finalizar
-  while (not Connected) and (not _sair) do
+  // Repete enquanto não conseguir conexão e não exceder tentativas
+  while (not Connected) and (_tentativas < _max) do
     try
       // Busca em cache local o endereço do servidor
       Params.Values['HostName'] := LerIni('cache', 'servidor', 'host');
@@ -60,30 +57,40 @@ begin
       Connected := True;
     except
       // Caso a tentativa fracasse
-      TThread.Synchronize(nil, procedure
       begin
-        TDialogService.InputQuery('Servidor não encontrado', ['IP', 'Porta'], ['', ''], procedure(const AResult: TModalResult; const AValues: array of string)
+        // Incrementa tentativas
+        Inc(_tentativas);
+
+        var _respondido := False;
+
+        TThread.Synchronize(nil, procedure
         begin
-          if AResult = mrOk then
+          TDialogService.InputQuery('Servidor não encontrado', ['IP', 'Porta'], ['', ''],
+          procedure(const AResult: TModalResult; const AValues: array of string)
           begin
-            SalvarIni('cache', 'servidor', 'host', AValues[0]);
-            SalvarIni('cache', 'servidor', 'porta', AValues[1]);
-
-            {$IF Defined(ANDROID)}
-            _respondido := True;
-            {$ENDIF}
-          end
-          else
-            Application.Terminate;
+            if AResult = mrOk then
+            begin
+              SalvarIni('cache', 'servidor', 'host', AValues[0]);
+              SalvarIni('cache', 'servidor', 'porta', AValues[1]);
+              _respondido := True;
+            end
+            else
+            begin
+              _respondido := True;
+              Application.Terminate;
+            end;
+          end);
         end);
-      end);
 
-      {$IF Defined(ANDROID)}
-      // No Android a tela de dialogo não pausa o código
-      while not _respondido do
-        Sleep(100);
-      {$ENDIF}
+        // Aguarda a resposta do diálogo
+        while not _respondido do
+          Sleep(100);
+      end;
     end;
+
+  // Se não conseguiu conectar após todas as tentativas
+  if not Connected then
+    raise Exception.Create('Não foi possível conectar ao servidor');
 end;
 procedure TKAFSConexaoDataSnap.Desconectar;
 begin
