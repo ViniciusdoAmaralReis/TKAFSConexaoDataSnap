@@ -19,7 +19,7 @@ type
 implementation
 
 uses
-  UntKAFSFuncoes;
+  uKAFSFuncoes;
 
 constructor TKAFSConexaoDataSnap.Create(AOwner: TComponent);
 begin
