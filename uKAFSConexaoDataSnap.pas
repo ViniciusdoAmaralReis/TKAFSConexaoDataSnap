@@ -39,6 +39,9 @@ begin
   Params.Values['CommunicationTimeout'] := '10000';
   Params.Values['ConnectionIdleTimeout'] := '30000';
   Params.Values['ConnectTimeout'] := '5000';
+
+  // Inicia a conexão
+  Conectar;
 end;
 
 procedure TKAFSConexaoDataSnap.Conectar;
@@ -50,8 +53,11 @@ begin
   while (not Connected) and (_tentativas < _max) do
     try
       // Busca em cache local o endereço do servidor
-      Params.Values['HostName'] := LerIni('cache', 'servidor', 'host');
-      Params.Values['Port'] := LerIni('cache', 'servidor', 'porta');
+      with Params do
+      begin
+        Values['HostName'] := LerIni('cache', 'servidor', 'host');
+        Values['Port'] := LerIni('cache', 'servidor', 'porta');
+      end;
 
       // Tentativa de conexão
       Connected := True;
@@ -61,7 +67,9 @@ begin
         // Incrementa tentativas
         Inc(_tentativas);
 
+        {$IFDEF ANDROID}
         var _respondido := False;
+        {$ENDIF}
 
         TThread.Synchronize(nil, procedure
         begin
@@ -72,19 +80,27 @@ begin
             begin
               SalvarIni('cache', 'servidor', 'host', AValues[0]);
               SalvarIni('cache', 'servidor', 'porta', AValues[1]);
+
+              {$IFDEF ANDROID}
               _respondido := True;
+              {$ENDIF}
             end
             else
             begin
+              {$IFDEF ANDROID}
               _respondido := True;
+              {$ENDIF}
+
               Application.Terminate;
             end;
           end);
         end);
 
+        {$IFDEF ANDROID}
         // Aguarda a resposta do diálogo
         while not _respondido do
           Sleep(100);
+        {$ENDIF}
       end;
     end;
 
