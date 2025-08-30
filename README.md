@@ -1,4 +1,4 @@
-# 🧩 uKAFSConexaoDataSnap
+# 🧩 TKAFSConexaoDataSnap
 
 Componente Delphi/FireMonkey para conexão DataSnap com suporte a reconexão automática, persistência de configurações e interface de fallback para entrada manual de dados do servidor.
 
