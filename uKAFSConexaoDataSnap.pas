@@ -4,7 +4,7 @@ interface
 
 uses
   System.Classes, System.SysUtils, System.UITypes,
-  FMX.DialogService, FMX.Forms,
+  FMX.Dialogs, FMX.DialogService, FMX.Forms,
   Data.SqlExpr;
 
 type
@@ -106,7 +106,7 @@ begin
 
   // Se não conseguiu conectar após todas as tentativas
   if not Connected then
-    raise Exception.Create('Não foi possível conectar ao servidor');
+    TThread.Synchronize(nil, procedure begin ShowMessage('Não foi possível conectar ao servidor'); end);
 end;
 procedure TKAFSConexaoDataSnap.Desconectar;
 begin
