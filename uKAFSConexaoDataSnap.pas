@@ -1,4 +1,4 @@
-unit uKAFSConexaoDataSnap;
+ï»¿unit uKAFSConexaoDataSnap;
 
 interface
 
@@ -28,10 +28,10 @@ begin
   // Configura o componente para DataSnap
   DriverName := 'Datasnap';
 
-  // Desabilita janela de login padrão
+  // Desabilita janela de login padrï¿½o
   LoginPrompt := False;
 
-  // Configura parâmetros para DataSnap
+  // Configura parï¿½metros para DataSnap
   Params.Values['CommunicationProtocol'] := 'tcp/ip';
   Params.Values['DatasnapContext'] := 'datasnap/';
 
@@ -40,7 +40,7 @@ begin
   Params.Values['ConnectionIdleTimeout'] := '30000';
   Params.Values['ConnectTimeout'] := '5000';
 
-  // Inicia a conexão
+  // Inicia a conexï¿½o
   Conectar;
 end;
 
@@ -49,17 +49,17 @@ begin
   var _tentativas := 0;
   const _max = 3; // Limite de tentativas
 
-  // Repete enquanto não conseguir conexão e não exceder tentativas
+  // Repete enquanto nï¿½o conseguir conexï¿½o e nï¿½o exceder tentativas
   while (not Connected) and (_tentativas < _max) do
     try
-      // Busca em cache local o endereço do servidor
+      // Busca em cache local o endereï¿½o do servidor
       with Params do
       begin
         Values['HostName'] := LerIni('cache', 'servidor', 'host');
         Values['Port'] := LerIni('cache', 'servidor', 'porta');
       end;
 
-      // Tentativa de conexão
+      // Tentativa de conexï¿½o
       Connected := True;
     except
       // Caso a tentativa fracasse
@@ -73,7 +73,7 @@ begin
 
         TThread.Synchronize(nil, procedure
         begin
-          TDialogService.InputQuery('Servidor não encontrado', ['IP', 'Porta'], ['', ''],
+          TDialogService.InputQuery('Servidor nï¿½o encontrado', ['IP', 'Porta'], ['', ''],
           procedure(const AResult: TModalResult; const AValues: array of string)
           begin
             if AResult = mrOk then
@@ -97,16 +97,16 @@ begin
         end);
 
         {$IFDEF ANDROID}
-        // Aguarda a resposta do diálogo
+        // Aguarda a resposta do diï¿½logo
         while not _respondido do
           Sleep(100);
         {$ENDIF}
       end;
     end;
 
-  // Se não conseguiu conectar após todas as tentativas
+  // Se nï¿½o conseguiu conectar apï¿½s todas as tentativas
   if not Connected then
-    TThread.Synchronize(nil, procedure begin ShowMessage('Não foi possível conectar ao servidor'); end);
+    TThread.Synchronize(nil, procedure begin ShowMessage('Nï¿½o foi possï¿½vel conectar ao servidor'); end);
 end;
 procedure TKAFSConexaoDataSnap.Desconectar;
 begin
