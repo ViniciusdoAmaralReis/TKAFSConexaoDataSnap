@@ -26,19 +26,19 @@ begin
   inherited Create(AOwner);
 
   // Configura o componente para DataSnap
-  DriverName := 'Datasnap';
+  Self.DriverName := 'Datasnap';
 
   // Desabilita janela de login padr�o
-  LoginPrompt := False;
+  Self.LoginPrompt := False;
 
-  // Configura par�metros para DataSnap
-  Params.Values['CommunicationProtocol'] := 'tcp/ip';
-  Params.Values['DatasnapContext'] := 'datasnap/';
+  // Configura parâmetros para DataSnap
+  Self.Params.Values['CommunicationProtocol'] := 'tcp/ip';
+  Self.Params.Values['DatasnapContext'] := 'datasnap/';
 
   // Configura timeout
-  Params.Values['CommunicationTimeout'] := '10000';
-  Params.Values['ConnectionIdleTimeout'] := '30000';
-  Params.Values['ConnectTimeout'] := '5000';
+  Self.Params.Values['CommunicationTimeout'] := '10000';
+  Self.Params.Values['ConnectionIdleTimeout'] := '30000';
+  Self.Params.Values['ConnectTimeout'] := '5000';
 
   // Inicia a conex�o
   Conectar;
@@ -53,11 +53,8 @@ begin
   while (not Connected) and (_tentativas < _max) do
     try
       // Busca em cache local o endere�o do servidor
-      with Params do
-      begin
-        Values['HostName'] := LerIni('cache', 'servidor', 'host');
-        Values['Port'] := LerIni('cache', 'servidor', 'porta');
-      end;
+      Self.Params.Values['HostName'] := LerIni('cache', 'servidor', 'ip');
+      Self.Params.Values['Port'] := LerIni('cache', 'servidor', 'porta');
 
       // Tentativa de conex�o
       Connected := True;
@@ -73,12 +70,12 @@ begin
 
         TThread.Synchronize(nil, procedure
         begin
-          TDialogService.InputQuery('Servidor n�o encontrado', ['IP', 'Porta'], ['', ''],
+          TDialogService.InputQuery('Servidor não encontrado', ['IP', 'Porta'], ['', ''],
           procedure(const AResult: TModalResult; const AValues: array of string)
           begin
             if AResult = mrOk then
             begin
-              SalvarIni('cache', 'servidor', 'host', AValues[0]);
+              SalvarIni('cache', 'servidor', 'ip', AValues[0]);
               SalvarIni('cache', 'servidor', 'porta', AValues[1]);
 
               {$IFDEF ANDROID}
@@ -106,7 +103,7 @@ begin
 
   // Se n�o conseguiu conectar ap�s todas as tentativas
   if not Connected then
-    TThread.Synchronize(nil, procedure begin ShowMessage('N�o foi poss�vel conectar ao servidor'); end);
+    TThread.Synchronize(nil, procedure begin ShowMessage('N�o foi possível conectar ao servidor'); end);
 end;
 procedure TKAFSConexaoDataSnap.Desconectar;
 begin
