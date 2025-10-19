@@ -10,8 +10,8 @@ uses
 type
   TKAFSConexaoDataSnap = class(TSQLConnection)
 
-    constructor Create(AOwner: TComponent); reintroduce;
-    procedure Conectar;
+    constructor Create(AOwner: TComponent; const _servidor: String); reintroduce;
+    procedure Conectar(const _servidor: String);
     procedure Desconectar;
     destructor Destroy; override;
   end;
@@ -21,7 +21,7 @@ implementation
 uses
   uKAFSFuncoes;
 
-constructor TKAFSConexaoDataSnap.Create(AOwner: TComponent);
+constructor TKAFSConexaoDataSnap.Create(AOwner: TComponent; const _servidor: String);
 begin
   inherited Create(AOwner);
 
@@ -41,10 +41,10 @@ begin
   Self.Params.Values['ConnectTimeout'] := '5000';
 
   // Inicia a conex�o
-  Conectar;
+  Conectar(_servidor);
 end;
 
-procedure TKAFSConexaoDataSnap.Conectar;
+procedure TKAFSConexaoDataSnap.Conectar(const _servidor: String);
 begin
   var _tentativas := 0;
   const _max = 3; // Limite de tentativas
@@ -53,8 +53,8 @@ begin
   while (not Connected) and (_tentativas < _max) do
     try
       // Busca em cache local o endere�o do servidor
-      Self.Params.Values['HostName'] := LerIni('cache', 'servidor', 'ip');
-      Self.Params.Values['Port'] := LerIni('cache', 'servidor', 'porta');
+      Self.Params.Values['HostName'] := LerIni('cache', _servidor, 'ip');
+      Self.Params.Values['Port'] := LerIni('cache', _servidor, 'porta');
 
       // Tentativa de conex�o
       Connected := True;
@@ -70,13 +70,13 @@ begin
 
         TThread.Synchronize(nil, procedure
         begin
-          TDialogService.InputQuery('Servidor não encontrado', ['IP', 'Porta'], ['', ''],
+          TDialogService.InputQuery(_servidor + ' não encontrado', ['IP', 'Porta'], ['', ''],
           procedure(const AResult: TModalResult; const AValues: array of string)
           begin
             if AResult = mrOk then
             begin
-              SalvarIni('cache', 'servidor', 'ip', AValues[0]);
-              SalvarIni('cache', 'servidor', 'porta', AValues[1]);
+              SalvarIni('cache', _servidor, 'ip', AValues[0]);
+              SalvarIni('cache', _servidor, 'porta', AValues[1]);
 
               {$IFDEF ANDROID}
               _respondido := True;
