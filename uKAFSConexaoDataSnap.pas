@@ -53,8 +53,8 @@ begin
   while (not Connected) and (_tentativas < _max) do
     try
       // Busca em cache local o endere�o do servidor
-      Self.Params.Values['HostName'] := LerIni('cache', _servidor, 'ip');
-      Self.Params.Values['Port'] := LerIni('cache', _servidor, 'porta');
+      Self.Params.Values['HostName'] := LerIni(True, 'cache', _servidor, 'ip');
+      Self.Params.Values['Port'] := LerIni(True, 'cache', _servidor, 'porta');
 
       // Tentativa de conex�o
       Connected := True;
@@ -75,8 +75,8 @@ begin
           begin
             if AResult = mrOk then
             begin
-              SalvarIni('cache', _servidor, 'ip', AValues[0]);
-              SalvarIni('cache', _servidor, 'porta', AValues[1]);
+              SalvarIni(True, 'cache', _servidor, 'ip', AValues[0]);
+              SalvarIni(True, 'cache', _servidor, 'porta', AValues[1]);
 
               {$IFDEF ANDROID}
               _respondido := True;
